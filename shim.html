@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<!-- saved from url=(0132)blob:https://5mdysvt4vkx2lmpr81mny9gk11mnf78ld4n68go7hw28qvhrr9-h785866787.scf.usercontent.goog/3c168d38-7fde-48f0-a38a-50bf8bfb9b22 -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjliNTYzZWFkZTM5OGI3ZWRjOTg2YThhYjM3YzNlMTY3ZjgyOGRhZGUiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbVwvZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIxMzQ3NDQ3NTgyMTAyODc1Mjk4MyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzJiNTVlY2ZiOWZkMDgyZDJfZ2l0aHViLW9wdGltaXplZC1ndWlkZS04MDkifSwiZXhwIjoxNzUzNzkwNzk5LCJpYXQiOjE3NTM3ODcxOTksImFsZyI6IlJTMjU2In0.LrgjIby0GLZCh9fqaOR7SfZWPDBNx7dj6n3a6ZORQ3lfaEos_Y7CFPcQgSC3pIl89yvW_k4svGDALU7NHlxAeK2YVzzxIKruXB0MN85759a8v2TAGAfycpmgpjnATXPLxtseNpZZ_bj1PrFRxNnR6jZGXC-bXwDQ-4Ig_r9qrte5qf_gC6-RMe2SIxZE-9MLz6ttX_N7VSb5nUP4uRPjx4zbEiAArdtlOkpJtIA0CwwQByuC_xv78_65S632X70Q-MK_eb0V8Dss5MqWFZY0YUPLfiFhpS-XFpdgbAs_FofmEez6Ru8ReeDl2yIBJ8IUIDuDuINFUncMpQ15HtlI3Q","c_2b55ecfb9fd082d2_github-optimized-guide-809")</script><script>(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script>
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script>((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-2.5-flash-preview-05-20","imageModelName":"imagen-3.0-generate-002","imageEditModelName":"gemini-2.0-flash-preview-image-generation","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash-preview-04-17"]})</script><script>(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Interactif : Sport et Alimentation</title>
+    <!-- Tailwind CSS CDN : Chargé depuis un serveur externe, idéal pour GitHub Pages car pas de fichier local à gérer. -->
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <!-- Google Fonts : Chargé depuis un serveur externe, idéal pour GitHub Pages. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2f7; /* Very light pastel blue background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better scroll behavior */
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .main-wrapper {
+            width: 100%; /* Prend toute la largeur disponible */
+            max-width: 900px; /* Largeur maximale pour le contenu sans la barre latérale */
+        }
+        /* Styles de la barre latérale (sidebar) supprimés car elle est remplacée par la barre de recherche */
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            overflow: hidden;
+            width: 100%; /* Assure que le conteneur prend toute la largeur du main-wrapper */
+        }
+        .header {
+            background-color: #a7d9f2; /* Light blue header */
+            color: white;
+            padding: 1.5rem 2rem;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            text-align: center;
+        }
+        .section-title {
+            background-color: #b3e0f2; /* Light blue for section titles */
+            padding: 1.25rem 2rem; /* Increased padding */
+            cursor: pointer;
+            border-bottom: 1px solid #91c7e0; /* Slightly darker blue border */
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700; /* Bolder */
+            color: #2d3748; /* Darker text */
+            scroll-margin-top: 70px; /* Offset for sticky header/sidebar */
+        }
+        .section-title:hover {
+            background-color: #91c7e0; /* Slightly darker on hover */
+        }
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            background-color: #f7fcff; /* Very light background for content */
+            padding: 0 2rem; /* Initial padding for smooth transition */
+        }
+        .section-content.active {
+            max-height: 9999px; /* Adjusted to a very large value to ensure content always fits */
+            padding: 1rem 2rem; /* Padding when active */
+        }
+        .subsection-title {
+            background-color: #c2e8f7; /* Even lighter blue for subsection titles */
+            padding: 1rem 1.5rem; /* Increased padding */
+            cursor: pointer;
+            border-bottom: 1px solid #a7d9f2;
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600; /* Bolder */
+            color: #4a5568;
+            margin-top: 0.75rem; /* Increased margin */
+            border-radius: 0.75rem; /* More rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            scroll-margin-top: 70px; /* Offset for sticky header/sidebar */
+        }
+        .subsection-title:hover {
+            background-color: #a7d9f2;
+        }
+        .subsection-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* More rounded corners */
+            margin-top: 0.5rem; /* Increased margin */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03); /* Lighter shadow */
+            padding: 0 1.5rem; /* Initial padding for smooth transition */
+        }
+        .subsection-content.active {
+            max-height: 9999px; /* Adjusted to a very large value to ensure content always fits */
+            padding: 0.75rem 1.5rem; /* Padding when active */
+        }
+        .list-item {
+            padding: 0.6rem 0; /* Increased padding */
+            color: #4a5568;
+            line-height: 1.6; /* Better line spacing */
+        }
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+        .arrow.rotate {
+            transform: rotate(90deg);
+        }
+
+        /* Image specific styling */
+        .content-image {
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem; /* Rounded corners for images */
+            margin-bottom: 1rem; /* Space below image */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for images */
+        }
+
+        /* LLM Feature specific styling */
+        .llm-feature-box {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #d1eaff; /* Light blue border */
+        }
+        .llm-feature-box textarea, .llm-feature-box input[type="text"], .llm-feature-box input[type="number"], .llm-feature-box select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #b3d9f2; /* Blue-ish border */
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .llm-feature-box input[type="text"], .llm-feature-box input[type="number"], .llm-feature-box select {
+            min-height: auto; /* Override textarea's min-height */
+            margin-bottom: 0.75rem;
+        }
+        .llm-feature-box button {
+            background-color: #4CAF50; /* Green button - kept for contrast */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .llm-feature-box button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+        .llm-feature-box button:active {
+            transform: translateY(0);
+        }
+        .llm-response {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e6f7ff; /* Very light blue background */
+            border: 1px solid #a7d9f2; /* Blue border */
+            border-radius: 0.5rem;
+            color: #0d47a1; /* Darker blue text */
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre-wrap; /* Preserve whitespace and line breaks */
+            display: none; /* Hidden by default */
+        }
+        .llm-response.active {
+            display: block;
+        }
+        .loading-indicator {
+            display: none;
+            margin-top: 1rem;
+            color: #4CAF50; /* Green loading indicator - kept for contrast */
+            font-weight: 500;
+        }
+        .loading-indicator.active {
+            display: block;
+        }
+
+        /* Table specific styles for workout plan */
+        .workout-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9em;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0.5rem;
+            overflow: hidden; /* Ensures rounded corners apply to table */
+        }
+        .workout-table th, .workout-table td {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .workout-table thead th {
+            background-color: #a7d9f2;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .workout-table tbody tr:nth-child(even) {
+            background-color: #f7fcff; /* Lighter stripe for readability */
+        }
+        .workout-table tbody tr:hover {
+            background-color: #e0f2f7; /* Hover effect */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            /* .sidebar { ... } - Styles supprimés */
+            .section-title, .subsection-title {
+                padding: 1rem 1.5rem; /* Adjust padding for smaller screens */
+            }
+            .section-content.active, .subsection-content.active {
+                padding: 0.75rem 1rem; /* Adjust padding for smaller screens */
+            }
+            .workout-table, .workout-table thead, .workout-table tbody, .workout-table th, .workout-table td, .workout-table tr {
+                display: block; /* Make table elements behave like blocks */
+            }
+            .workout-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px; /* Hide table headers visually but keep them for screen readers */
+            }
+            .workout-table tr {
+                margin-bottom: 10px;
+                border: 1px solid #e0e0e0;
+                border-radius: 0.5rem;
+                overflow: hidden;
+            }
+            .workout-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%; /* Space for the pseudo-element label */
+                text-align: right;
+            }
+            .workout-table td:before {
+                content: attr(data-label); /* Use data-label for responsive headers */
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: #2d3748;
+            }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mt-2{margin-top:0.5rem}.mt-6{margin-top:1.5rem}.block{display:block}.flex{display:flex}.list-item{display:list-item}.w-full{width:100%}.list-disc{list-style-type:disc}.gap-2{gap:0.5rem}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-b-lg{border-bottom-right-radius:0.5rem;border-bottom-left-radius:0.5rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-blue-300{--tw-border-opacity:1;border-color:rgb(147 197 253 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-gray-500{--tw-bg-opacity:1;background-color:rgb(107 114 128 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.pl-5{padding-left:1.25rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:bg-blue-600:hover{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-600:hover{--tw-bg-opacity:1;background-color:rgb(75 85 99 / var(--tw-bg-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-blue-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(96 165 250 / var(--tw-ring-opacity, 1))}</style></head>
+<body>
+    <div class="main-wrapper">
+        <!-- La barre latérale (Table des Matières) a été supprimée -->
+
+        <div class="container">
+            <div class="header">
+                <h1 class="text-3xl font-bold">Conseils pour le Sport et l'Alimentation</h1>
+                <p class="mt-2 text-lg">Votre guide interactif pour une vie saine et active.</p>
+            </div>
+
+            <!-- Nouvelle Barre de Recherche -->
+            <div class="p-4 bg-white border-b border-gray-200 rounded-b-lg shadow-sm">
+                <input type="text" id="search-input" class="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Rechercher dans le guide...">
+            </div>
+
+            <!-- Nouveau Module: Profil -->
+            <div class="module" id="profil">
+                <div class="section-title" onclick="toggleSection(this)" style="display: flex;">
+                    <span>Profil</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="section-content">
+                    <div class="llm-feature-box">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Informations Personnelles</h3>
+                        <div class="mb-4">
+                            <label for="profile-nom" class="block text-gray-700 text-sm font-bold mb-2">Nom :</label>
+                            <input type="text" id="profile-nom" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Votre nom de famille">
+                        </div>
+                        <div class="mb-4">
+                            <label for="profile-prenom" class="block text-gray-700 text-sm font-bold mb-2">Prénom :</label>
+                            <input type="text" id="profile-prenom" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Votre prénom">
+                        </div>
+                        <div class="mb-4">
+                            <label for="profile-age" class="block text-gray-700 text-sm font-bold mb-2">Âge :</label>
+                            <input type="number" id="profile-age" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: 30">
+                        </div>
+                        <div class="mb-4">
+                            <label for="profile-sexe" class="block text-gray-700 text-sm font-bold mb-2">Sexe :</label>
+                            <select id="profile-sexe" class="w-full p-2 border border-gray-300 rounded-md">
+                                <option value="">Sélectionner</option>
+                                <option value="homme">Homme</option>
+                                <option value="femme">Femme</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="profile-poids" class="block text-gray-700 text-sm font-bold mb-2">Poids (kg) :</label>
+                            <input type="number" step="0.1" id="profile-poids" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: 70.5">
+                        </div>
+                        <div class="mb-4">
+                            <label for="profile-taille" class="block text-gray-700 text-sm font-bold mb-2">Taille (cm) :</label>
+                            <input type="number" id="profile-taille" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ex: 175">
+                        </div>
+                    </div>
+
+                    <!-- Calculateur de Besoins Caloriques Journaliers -->
+                    <div class="llm-feature-box mt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Calculateur de Besoins Caloriques Journaliers</h3>
+                        <div class="mb-4">
+                            <label for="activity-level" class="block text-gray-700 text-sm font-bold mb-2">Niveau d'activité physique :</label>
+                            <select id="activity-level" class="w-full p-2 border border-gray-300 rounded-md">
+                                <option value="">Sélectionner un niveau d'activité</option>
+                                <option value="sedentary">Sédentaire (peu ou pas d'exercice)</option>
+                                <option value="light">Légèrement actif (exercice léger 1-3 jours/semaine)</option>
+                                <option value="moderate">Modérément actif (exercice modéré 3-5 jours/semaine)</option>
+                                <option value="active">Très actif (exercice intense 6-7 jours/semaine)</option>
+                                <option value="extra-active">Extrêmement actif (exercice très intense / travail physique)</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="calculateCaloricNeeds()">Calculer les Besoins</button>
+                            <button onclick="resetCaloricCalculator()" class="bg-gray-500 hover:bg-gray-600">Réinitialiser le Calculateur</button>
+                        </div>
+                        <div id="caloric-needs-response" class="llm-response rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module: Création d'un Plan d'Entraînement -->
+            <div class="module" id="plan-entrainement-coach">
+                <div class="section-title" onclick="toggleSection(this)" style="display: flex;">
+                    <span>Création d'un Plan d'Entraînement</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="section-content">
+                    <!-- LLM Feature: Workout Plan Generator -->
+                    <div class="module" id="personnalisation-plan-entrainement">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>✨ Personnalisation du Plan d'Entraînement ✨</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="llm-feature-box">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Obtenez un plan d'entraînement personnalisé !</h3>
+                                <div class="mb-4">
+                                    <label for="fitness-level" class="block text-gray-700 text-sm font-bold mb-2">Votre niveau de forme physique :</label>
+                                    <select id="fitness-level" class="w-full p-2 border border-gray-300 rounded-md">
+                                        <option value="">Sélectionner un niveau</option>
+                                        <option value="débutant">Débutant</option>
+                                        <option value="intermédiaire">Intermédiaire</option>
+                                        <option value="avancé">Avancé</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="workout-goals" class="block text-gray-700 text-sm font-bold mb-2">Vos objectifs (perte de poids, prise de masse, endurance, force) :</label>
+                                    <input type="text" id="workout-goals" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Perte de poids, amélioration cardio">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="available-equipment" class="block text-gray-700 text-sm font-bold mb-2">Équipement disponible (poids du corps, haltères, machines de gym) :</label>
+                                    <input type="text" id="available-equipment" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Poids du corps, élastiques">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="workout-frequency-input" class="block text-gray-700 text-sm font-bold mb-2">Fréquence souhaitée (ex: 3 fois par semaine) :</label>
+                                    <input type="text" id="workout-frequency-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="3 fois par semaine">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="workout-duration-input" class="block text-gray-700 text-sm font-bold mb-2">Durée par séance souhaitée (ex: 45 min) :</label>
+                                    <input type="text" id="workout-duration-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="45 minutes">
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="generateWorkoutPlan()">Générer le Plan d'Entraînement</button>
+                                    <button onclick="resetWorkoutPlanForm()" class="bg-gray-500 hover:bg-gray-600">Réinitialiser</button>
+                                    <button onclick="exportWorkoutPlan()" class="bg-blue-500 hover:bg-blue-600">Exporter</button>
+                                </div>
+                                <div id="workout-plan-response" class="llm-response rounded-lg"></div>
+                                <div id="workout-plan-loading" class="loading-indicator">Génération du plan d'entraînement...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Étapes Clés -->
+                    <div class="module" id="etapes-cles">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Évaluer Niveau et Objectifs</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Objectifs finaux : Définir clairement ce que le client souhaite atteindre (perte de poids, prise de masse, amélioration de l'endurance, etc.). Ces objectifs doivent être SMART (Spécifiques, Mesurables, Atteignables, Réalistes, Temporellement définis).</li>
+                                <li class="list-item">Évaluation physique : Réaliser des tests physiques pour déterminer le niveau actuel du client (force, endurance, flexibilité, composition corporelle). Cela peut inclure des tests de force maximale, des tests cardio-vasculaires (ex: test de Cooper), des mesures de souplesse, etc.</li>
+                                <li class="list-item">Limites et Mesures : Identifier les éventuelles limitations physiques (blessures antérieures, problèmes de santé) et les contraintes de temps ou de ressources du client. Mettre en place des indicateurs mesurables pour suivre la progression (poids, mensurations, performances aux exercices, etc.).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Choisir Types d'Exercices -->
+                    <div class="module" id="choisir-types-exercices">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Choisir Types d'Exercices</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Entraînement en force : Inclut des exercices de musculation avec poids libres, machines, ou poids du corps pour augmenter la force et la masse musculaire.</li>
+                                <li class="list-item">Entraînement cardiovasculaire : Activités qui augmentent le rythme cardiaque et améliorent l'endurance (course, vélo, natation, etc.).</li>
+                                <li class="list-item">Entraînement flexibilité et mobilité : Exercices d'étirement et de mobilité articulaire pour améliorer l'amplitude de mouvement et prévenir les blessures (yoga, Pilates, étirements dynamiques).</li>
+                                <li class="list-item">Exercices pour le tronc : Renforcement des muscles abdominaux et dorsaux pour une meilleure posture, stabilité et prévention des douleurs lombaires (planche, crunchs, gainage).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Décider Fréquence et Structure -->
+                    <div class="module" id="decider-frequence-structure">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Décider Fréquence et Structure</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Fréquence : Déterminer le nombre de sessions d'entraînement par semaine. La fréquence idéale dépend des objectifs, du niveau du client et du type d'entraînement (ex: 3-5 séances par semaine pour la force, plus pour le cardio).</li>
+                                <li class="list-item">Durée des séances : Fixer la durée de chaque séance, incluant l'échauffement (5-10 min), le corps de séance (30-60 min) et la récupération/étirements (5-10 min).</li>
+                                <li class="list-item">Structure de la séance : Organiser la séance avec une progression logique (ex: échauffement, exercices principaux, exercices secondaires, récupération).</li>
+                                <li class="list-item">Division de l'entraînement : Choisir une répartition des groupes musculaires ou des types d'exercices sur la semaine (ex: full body, split par groupe musculaire, haut/bas du corps).</li>
+                                <li class="list-item">Charge de travail : Définir le nombre de séries, de répétitions et le poids/intensite pour chaque exercice, en fonction des objectifs (force, endurance, hyperthrophie).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Intégrer Jours de Repos et Récupération -->
+                    <div class="module" id="integrer-jours-repos">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Intégrer Jours de Repos et Récupération</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Jours de repos : Planifier des jours de repos suffisants pour permettre au corps de récupérer et de se reconstruire.</li>
+                                <li class="list-item">Récupération active : Inclure des activités de faible intensité (marche, étirements légers) les jours de repos pour favoriser la circulation sanguine et la récupération musculaire.</li>
+                                <li class="list-item">Sommeil : Insister sur l'importance d'un sommeil de qualité pour la récupération physique et mentale.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Ajuster Plans via Feedback -->
+                    <div class="module" id="ajuster-plans-feedback">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Ajuster Plans via Feedback</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <p class="list-item">Cette section contiendrait des informations sur l'ajustement du plan d'entraînement en fonction des retours du client et de ses progrès.</p>
+                            <p class="list-item">Exemples : Écoute active du client, ajustement des charges/volumes, modification des exercices, gestion des blessures ou de la fatigue.</p>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Guider sur Nutrition et Mode de Vie -->
+                    <div class="module" id="guider-nutrition-mode-vie">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Guider sur Nutrition et Mode de Vie</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <p class="list-item">Exemples : Apports caloriques, macronutriments, hydratation, gestion du stress, sommeil, habitudes saines.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module: Alimentation Sportive -->
+            <div class="module" id="alimentation-sportive">
+                <div class="section-title" onclick="toggleSection(this)" style="display: flex;">
+                    <span>Alimentation Sportive</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="section-content">
+                    <!-- Sub-module: Importance Alimentation -->
+                    <div class="module" id="importance-alimentation">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Importance Alimentation</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Éviter dérives (dopants, TCA) : Une alimentation saine et équilibrée est cruciale pour éviter les comportements à risque comme le dopage ou les troubles du comportement alimentaire (TCA).</li>
+                                <li class="list-item">Supporte charges d'entraînement : Une nutrition adéquate fournit l'énergie nécessaire pour supporter l'intensité et le volume des entraînements, favorisant l'adaptation et la progression.</li>
+                                <li class="list-item">Optimise performance : Une alimentation bien planifiée améliore la récupération, réduit la fatigue et optimise les performances sportives.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Catégories de Pratiquants -->
+                    <div class="module" id="categories-pratiquants">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Catégories de Pratiquants</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Débutant (sport santé) : L'accent est mis sur les bases d'une alimentation équilibrée pour soutenir une activité physique modérée et améliorer la santé générale.</li>
+                                <li class="list-item">Régulier (performance) : Pour les pratiquants plus assidus, l'alimentation est ajustée pour optimiser la récupération et les performances lors des entraînements et des compétitions.</li>
+                                <li class="list-item">Haut niveau (plan personnalisé) : Les athlètes de haut niveau nécessitent un plan nutritionnel très précis et individualisé, souvent élaboré avec un diététicien du sport, pour répondre à des besoins énergétiques et de récupération extrêmes.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Équilibre Alimentaire -->
+                    <div class="module" id="equilibre-alimentaire">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Équilibre Alimentaire</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Long terme : L'équilibre alimentaire est une démarche continue pour maintenir une bonne santé et des performances durables.</li>
+                                <li class="list-item">Bien choisir aliments et portions : Privilégiez les aliments non transformés et adaptez les quantités à vos besoins énergétiques.</li>
+                                <li class="list-item">3 repas + 2 collations/jour : Une répartition des repas tout au long de la journée permet un apport énergétique constant et évite les fringales.</li>
+                                <li class="list-item">Répartition calorique : Adaptez la répartition des macronutriments (glucides, lipides, protéines) en fonction de votre activité physique et de vos objectifs.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Nutriments -->
+                    <div class="module" id="nutriments">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Nutriments</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <!-- LLM Feature for Nutrition Explanations -->
+                            <div class="llm-feature-box">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">✨ Demandez à Gemini : Expliquez un Nutriment ✨</h3>
+                                <textarea id="nutrition-query-input" placeholder="Ex: le rôle du magnésium, les bienfaits de la vitamine C, les acides gras essentiels..." class="rounded-lg"></textarea>
+                                <button onclick="generateNutritionInfo()">Obtenir l'Explication</button>
+                                <div id="nutrition-response" class="llm-response rounded-lg"></div>
+                                <div id="nutrition-loading" class="loading-indicator">Chargement...</div>
+                            </div>
+
+                            <!-- Sub-module: Énergétiques -->
+                            <div class="module" id="nutriments-energetiques">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Énergétiques</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <!-- Sub-module: Glucides -->
+                                    <div class="module" id="glucides">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Glucides</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Principale source énergie : Les glucides sont le carburant préféré du corps, surtout pendant l'exercice.</li>
+                                                <li class="list-item">Utilisation rapide : Les glucides sont rapidement transformés en glucose, disponible pour l'énergie.</li>
+                                                <li class="list-item">Index Glycémique (IG) : L'IG mesure la rapidité avec laquelle un aliment augmente la glycémie. Privilégiez les IG bas pour une énergie durable.</li>
+                                                <li class="list-item">Glucides Lents vs Rapides : Les glucides lents (céréales complètes) fournissent une énergie progressive, les rapides (fruits, miel) sont utiles avant/pendant/après l'effort.</li>
+                                                <li class="list-item">Besoins spécifiques : Les besoins en glucides varient selon l'intensité et la durée de l'activité physique.</li>
+                                                <li class="list-item">Gestion des hypoglycémies : Une bonne planification des apports en glucides permet d'éviter les baisses de sucre pendant l'effort.</li>
+                                                <li class="list-item">Sources d'aliments : Céréales (riz, pâtes, pain), pommes de terre, fruits, légumes, légumineuses.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- Sub-module: Lipides -->
+                                    <div class="module" id="lipides">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Lipides</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Plus de calories (9 kcal/g) : Les lipides sont une source d'énergie très dense.</li>
+                                                <li class="list-item">Fonctions biologiques : Essentiels pour l'absorption des vitamines, la production d'hormones et la protection des organes.</li>
+                                                <li class="list-item">Utilisation en endurance : Les lipides sont une source d'énergie importante pour les efforts de longue durée et de faible intensité.</li>
+                                                <li class="list-item">Sources et qualités : Privilégiez les graisses insaturées (huiles végétales, avocats, noix) et limitez les graisses saturées (produits animaux, aliments transformés).</li>
+                                                <li class="list-item">Acides gras essentiels (AGE) : Oméga-3 et Oméga-6 sont indispensables et doivent être apportés par l'alimentation.</li>
+                                                <li class="list-item">Graisses saturées à limiter : Consommation excessive peut augmenter le risque de maladies cardiovasculaires.</li>
+                                                <li class="list-item">Graisses cuites à proscrire : Certaines graisses deviennent nocives à haute température (fritures).</li>
+                                                <li class="list-item">Cholestérol (HDL/LDL) : Équilibre entre bon (HDL) et mauvais (LDL) cholestérol important pour la santé cardiovasculaire.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- Sub-module: Protéines (Protéines) -->
+                                    <div class="module" id="proteines">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Protéines</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <!-- IMPORTANT pour GitHub Pages :
+                                                 Si vous voulez utiliser une image locale (ex: "ChatGPT Image 28 juil. 2025, 13_48_47.jpg"),
+                                                 assurez-vous que ce fichier image est bien PRÉSENT dans le MÊME DOSSIER
+                                                 que votre fichier HTML sur votre dépôt GitHub.
+                                                 Pour un fonctionnement immédiat, une URL de placeholder est utilisée.
+                                            -->
+                                            <img src="https://placehold.co/600x300/e0f2f7/4a5568?text=Source+de+Proteines" alt="" class="content-image">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Constituants essentiels (acides aminés) : Les protéines sont composées d'acides aminés, les "briques" des muscles et tissus.</li>
+                                                <li class="list-item">Rôle dans l'organisme : Essentiel pour la réparation et la croissance musculaire, la production d'enzymes et d'hormones, le système immunitaire.</li>
+                                                <li class="list-item">Sources (animales, végétales) : Viandes, poissons, œufs, produits laitiers, légumineuses, tofu, quinoa.</li>
+                                                <li class="list-item">Besoins et surconsommation : Les sportifs ont des besoins accrus, mais une surconsommation n'est pas bénéfique et peut être néfaste.</li>
+                                                <li class="list-item">Problèmes protéines : Une carence ou un excès peut entraîner des problèmes de santé.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Sub-module: Non Énergétiques -->
+                            <div class="module" id="nutriments-non-energetiques">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Non Énergétiques</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <!-- Sub-module: Fibres -->
+                                    <div class="module" id="fibres">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Fibres</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Résidus végétaux non digérés : Les fibres sont des composants des plantes que le corps ne peut pas digérer.</li>
+                                                <li class="list-item">Régulation glycémie/cholestérol : Elles aident à stabiliser la glycémie et à réduire le taux de cholestérol.</li>
+                                                <li class="list-item">Prévention cancers : Une consommation adéquate de fibres est associée à un risque réduit de certains cancers, notamment colorectal.</li>
+                                                <li class="list-item">Sources : Fruits, légumes, céréales complètes, légumineuses.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- Sub-module: Vitamines -->
+                                    <div class="module" id="vitamines">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Vitamines</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Indispensables à la vie : Les vitamines sont des micronutriments essentiels au bon fonctionnement de l'organisme.</li>
+                                                <li class="list-item">Liposolubles (A, D, E, K) : Vitamines solubles dans les graisses, stockées dans le corps.</li>
+                                                <li class="list-item">Hydrosolubles (B, C) : Vitamines solubles dans l'eau, non stockées et éliminées par les urines.</li>
+                                                <li class="list-item">Rôle dans le sport : Participent au métabolisme énergétique, à la récupération et à la protection antioxydante.</li>
+                                                <li class="list-item">Conservation et préparation : Certaines vitamines sont sensibles à la chaleur, à la lumière et à l'oxygène.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- Sub-module: Minéraux et Oligoéléments -->
+                                    <div class="module" id="mineraux-oligo-elements">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Minéraux et Oligoéléments</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Constituants cellulaires : Essentiels à la structure des os, des dents et des tissus.</li>
+                                                <li class="list-item">Éléments majeurs (Na, K, Mg, Ca, P, Cl, Fe, S) : Minéraux présents en grandes quantités dans l'organisme.</li>
+                                                <li class="list-item">Oligoéléments (I, Cr, Cu, Co, F, I, Mn, Zn, Se) : Minéraux nécessaires en très petites quantités.</li>
+                                                <li class="list-item">Rôle et sources : Impliqués dans de nombreuses fonctions (contraction musculaire, influx nerveux, transport d'oxygène). Sources variées (produits laitiers, viandes, légumes secs, fruits de mer).</li>
+                                                <li class="list-item">Carences (Fex: Magnésium) : Les carences peuvent entraîner fatigue, crampes, diminution des performances.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- Sub-module: Antioxydants -->
+                                    <div class="module" id="antioxydants">
+                                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                            <span>Antioxydants</span>
+                                            <span class="arrow">▶</span>
+                                        </div>
+                                        <div class="subsection-content">
+                                            <ul class="list-disc pl-5">
+                                                <li class="list-item">Luttent contre radicaux libres : Protègent les cellules des dommages causés par les radicaux libres, produits lors de l'exercice intense.</li>
+                                                <li class="list-item">Sources alimentaires (Vit E, C, A, Sélénium, Zinc, Cuivre) : On les trouve principalement dans les fruits et légumes colorés, les noix et les graines.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- New LLM Feature: Meal Idea Generator -->
+                    <div class="module" id="generateur-repas-ia">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>✨ Générateur d'Idées de Repas par Gemini ✨</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="llm-feature-box">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Obtenez des idées de repas personnalisées !</h3>
+                                <div class="mb-4">
+                                    <label for="meal-prefs" class="block text-gray-700 text-sm font-bold mb-2">Préférences alimentaires (ex: végétarien, sans gluten) :</label>
+                                    <input type="text" id="meal-prefs" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Végétarien, sans lactose...">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="meal-goals" class="block text-gray-700 text-sm font-bold mb-2">Objectifs (ex: prise de masse, perte de poids, endurance) :</label>
+                                    <input type="text" id="meal-goals" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Prise de masse, perte de poids...">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="meal-ingredients" class="block text-gray-700 text-sm font-bold mb-2">Ingrédients disponibles (ex: poulet, riz, brocoli) :</label>
+                                    <input type="text" id="meal-ingredients" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Poulet, quinoa, épinards...">
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="generateMealIdeas()">Générer des Idées de Repas</button>
+                                    <button onclick="resetMealIdeasForm()" class="bg-gray-500 hover:bg-gray-600">Réinitialiser</button>
+                                    <button onclick="exportMealIdeas()" class="bg-blue-500 hover:bg-blue-600">Exporter</button>
+                                </div>
+                                <div id="meal-ideas-response" class="llm-response rounded-lg"></div>
+                                <div id="meal-ideas-loading" class="loading-indicator">Chargement des idées de repas...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sub-module: Conditions Spécifiques -->
+                    <div class="module" id="conditions-specifiques">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Conditions Spécifiques</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="module" id="sportif-diabetique">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Sportif Diabétique</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Gestion de la glycémie : Importance d'un suivi régulier de la glycémie avant, pendant et après l'effort.</li>
+                                        <li class="list-item">Adaptation de l'insuline/médicaments : Ajustement des doses en fonction de l'activité physique.</li>
+                                        <li class="list-item">Apports en glucides : Planification des collations et repas pour éviter les hypoglycémies.</li>
+                                        <li class="list-item">Hydratation : Cruciale pour tous les sportifs, encore plus pour les diabétiques.</li>
+                                        <li class="list-item">Consultation médicale : Nécessité d'un suivi régulier avec un professionnel de santé.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="sportif-vegetarien">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Sportif Végétarien</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Sources de protéines végétales : Combiner légumineuses et céréales pour obtenir tous les acides aminés essentiels.</li>
+                                        <li class="list-item">Vitamines et minéraux : Attention aux apports en fer, vitamine B12, calcium, zinc, souvent moins présents dans les régimes végétariens strictes.</li>
+                                        <li class="list-item">Densité énergétique : Assurer un apport calorique suffisant pour couvrir les besoins liés à l'activité physique.</li>
+                                        <li class="list-item">Diversité alimentaire : Varier les sources végétales pour un profil nutritionnel complet.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module" id="regimes-complements">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Régimes et Compléments</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="module" id="regime-cretois">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Régime Crétois</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Principes : Basé sur les aliments traditionnels de la Crète (fruits, légumes, céréales complètes, légumineuses, huile d'olive, poissons, peu de viande rouge).</li>
+                                        <li class="list-item">Bénéfices : Réduit le risque de maladies cardiovasculaires, anti-inflammatoire, riche en antioxydants.</li>
+                                        <li class="list-item">Adaptation sportive : Fournit une bonne base pour les sportifs grâce à sa richesse en glucides complexes et graisses saines.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="regime-esquimau">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Régime Esquimau</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Principes : Riche en poissons gras (oméga-3), viandes de gibier, graisses animales.</li>
+                                        <li class="list-item">Bénéfices : Effets protecteurs sur le cœur et les articulations grâce aux oméga-3.</li>
+                                        <li class="list-item">Adaptation sportive : Les oméga-3 sont bénéfiques pour la récupération et la réduction de l'inflammation post-exercice.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="adaptogenes">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Adaptogènes</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Levure de Bière : Riche en vitamines B, bénéfique pour l'énergie et la santé de la peau/cheveux.</li>
+                                        <li class="list-item">Germe de blé : Source de vitamines E, B, minéraux et protéines.</li>
+                                        <li class="list-item">Spiruline : Algue riche en protéines, vitamines, minéraux et antioxydants.</li>
+                                        <li class="list-item">Lécithine de soja : Contient des phospholipides, importants pour les membranes cellulaires.</li>
+                                        <li class="list-item">Gelée royale : Riche en nutriments, réputée pour ses propriétés tonifiantes.</li>
+                                        <li class="list-item">Ginseng : Plante adaptogène qui aide à gérer le stress et améliorer l'énergie.</li>
+                                        <li class="list-item">Pollen / Propolis (non prouvé) : Souvent utilisés pour leurs propriétés supposées, mais les preuves scientifiques sont limitées.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="autres-complements">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Autres Compléments</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Carnitine (brûle graisseux) : Impliquée dans le transport des acides gras pour la production d'énergie. Son effet "brûle-graisse" est débattu.</li>
+                                        <li class="list-item">Créatine (non dopant) : Améliore la force et la puissance musculaire lors d'efforts courts et intenses. C'est un complément très étudié et reconnu.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="alimentation-hdn">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Alimentation Haute Densité Nutritionnelle (HDN)</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Principes : Privilégier les aliments riches en nutriments par calorie (fruits, légumes, légumineuses, céréales complètes, protéines maigres).</li>
+                                        <li class="list-item">Bénéfices : Apport optimal en vitamines, minéraux, fibres et antioxydants, tout en contrôlant l'apport calorique.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="additifs-alimentaires">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Additifs alimentaires (E-codes)</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Définition : Substances ajoutées aux aliments pour améliorer leur conservation, leur goût, leur couleur ou leur texture.</li>
+                                        <li class="list-item">Impact sur la santé : Certains additifs peuvent être controversés ou potentiellement nocifs en grande quantité. Il est préférable de limiter la consommation d'aliments ultra-transformés.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module" id="aliments-amis-sportif">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Aliments Amis du Sportif</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Cranberry : Riche en antioxydants, bénéfique pour la santé urinaire.</li>
+                                <li class="list-item">Cassis, Myrtille, Groseilles : Fruits rouges riches en antioxydants et vitamines, favorisent la récupération.</li>
+                                <li class="list-item">Melon : Hydratant et riche en vitamines et minéraux.</li>
+                                <li class="list-item">Tomate : Source de lycopène (antioxydant) et de vitamine C.</li>
+                                <li class="list-item">Banane : Excellente source d'énergie rapide et de potassium pour la fonction musculaire.</li>
+                                <li class="list-item">Chou vert : Riche en vitamines (K, C) et en fibres.</li>
+                                <li class="list-item">Quinoa : Protéine complète, riche en fibres et minéraux.</li>
+                                <li class="list-item">Lentilles et légumes secs : Sources de protéines végétales, fibres et glucides complexes.</li>
+                                <li class="list-item">Orange : Riche en vitamine C, essentielle pour le système immunitaire.</li>
+                                <li class="list-item">Raisin : Source d'énergie et d'antioxydants.</li>
+                                <li class="list-item">Fraise : Riche en vitamine C et antioxydants.</li>
+                                <li class="list-item">Épices et Herbes : Ajoutent de la saveur et des antioxydants aux repas.</li>
+                                <li class="list-item">Produits laitiers : Sources de calcium et de protéines pour la santé des os et des muscles.</li>
+                                <li class="list-item">Kiwi : Riche en vitamine C et fibres.</li>
+                                <li class="list-item">Kaki : Source de vitamines A et C, et de fibres.</li>
+                                <li class="list-item">Noix et fruits secs : Apportent des graisses saines, des protéines et des minéraux.</li>
+                                <li class="list-item">Pastèque : Très hydratante et source de vitamines.</li>
+                                <li class="list-item">Poulet : Excellente source de protéines maigres.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="module" id="sport-coeur">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Sport et Coeur</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <p class="list-item">Cette section se concentrerait sur l'impact de l'alimentation et du sport sur la santé cardiovasculaire.</p>
+                            <p class="list-item">Exemples : Réduction du cholestérol, régulation de la tension artérielle, prévention des maladies cardiaques, aliments bons pour le cœur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module" id="pratique-sportive-debutants">
+                <div class="section-title" onclick="toggleSection(this)" style="display: flex;">
+                    <span>Pratique Sportive des Débutants</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="section-content">
+                    <div class="module" id="exercices-sedentaires">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Exercices pour Personnes Sédentaires</span>
+                            <span class="arrow">▶</span> </div>
+                        <div class="subsection-content">
+                            <img src="https://placehold.co/600x300/e0f2f7/4a5568?text=Personne+faisant+du+sport" alt="" class="content-image">
+                            <p class="list-item">Commencer par de petits pas est la clé pour les personnes sédentaires. L'objectif est d'intégrer plus de mouvement dans la vie quotidienne.</p>
+                            <div class="module" id="activites-simples-quotidiennes">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Activités Simples Quotidiennes</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Promenade quotidienne (15-30 min) : Intégrez une marche rapide dans votre routine pour améliorer votre cardio et votre humeur.</li>
+                                        <li class="list-item">Diminuer l'utilisation excessive en voiture : Privilégiez la marche ou le vélo pour les courtes distances.</li>
+                                        <li class="list-item">Se lever de sa chaise (60-90 min) : Faites des pauses régulières pour vous étirer ou marcher quelques minutes.</li>
+                                        <li class="list-item">Débarrasser la table après dîner : Une petite activité physique après le repas favorise la digestion.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="exercices-specifiques">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Exercices Spécifiques</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Monter et descendre escaliers : Une excellente façon de renforcer vos jambes et votre cœur.</li>
+                                        <li class="list-item">Corde à sauter : Un exercice cardio intense qui améliore la coordination.</li>
+                                        <li class="list-item">Pompes : Renforce le haut du corps, les épaules et le tronc.</li>
+                                        <li class="list-item">Pont inversé : Cible les fessiers et les ischio-jambiers.</li>
+                                        <li class="list-item">Planche isométrique : Excellent pour renforcer les muscles profonds du tronc.</li>
+                                        <li class="list-item">Squats : Un exercice complet pour le bas du corps.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="autres-conseils-sedentaires">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Autres Conseils</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Un peu chaque jour mieux que rien : La régularité est la clé, même de courtes sessions sont bénéfiques.</li>
+                                        <li class="list-item">Petits repas actifs au travail : Profitez de vos pauses pour bouger un peu, même quelques étirements.</li>
+                                        <li class="list-item">Marcher dès que possible : Intégrez la marche dans vos déplacements quotidiens.</li>
+                                        <li class="list-item">Reprendre sport initial : Si vous avez déjà pratiqué un sport, envisagez de le reprendre progressivement.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module" id="commencer-le-sport">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Commencer le Sport</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Vérifier état de santé : Avant de débuter toute activité physique intense, il est crucial de consulter un médecin pour s'assurer de l'absence de contre-indications.</li>
+                                <li class="list-item">Choisir le sport (cardio, renforcement) : Optez pour une activité qui vous plaît et qui correspond à vos objectifs (ex: course à pied pour le cardio, musculation pour le renforcement).</li>
+                                <li class="list-item">Fréquence et durée (minimums) : Commencez par des sessions courtes (ex: 20-30 minutes) 2 à 3 fois par semaine, et augmentez progressivement.</li>
+                                <li class="list-item">Intensité d'entraînement : Démarrez à une intensité modérée pour permettre à votre corps de s'adapter, puis augmentez-la graduellement.</li>
+                                <li class="list-item">Établir un programme : Planifiez vos séances à l'avance pour maintenir la régularité et la motivation.</li>
+                                <li class="list-item">Sport à la maison : De nombreux exercices peuvent être réalisés sans équipement spécifique, à la maison (ex: pompes, squats, planches).</li>
+                                <li class="list-item">Motivation et plaisir : Choisissez des activités que you appréciez pour rester motivé sur le long terme.</li>
+                                <li class="list-item">Objectifs mesurables et progressifs : Fixez-vous des objectifs réalistes et suivez vos progrès pour rester engagé.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="module" id="echauffement-et-etirements">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Échauffement et Étirements</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="module" id="echauffement">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Échauffement</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Préparer corps à l'effort : L'échauffement augmente la température corporelle et prépare les muscles et les articulations à l'activité physique.</li>
+                                        <li class="list-item">Activités cardio légères (5-10 min) : Commencez par des activités à faible intensité comme la marche rapide, le vélo elliptique ou la corde à sauter.</li>
+                                        <li class="list-item">Mouvements mobilité articulaire : Effectuez des rotations et des flexions douces pour mobiliser les principales articulations (épaules, hanches, genoux).</li>
+                                        <li class="list-item">Versions allégées des exercices : Si vous allez faire de la musculation, réalisez les premiers exercices avec des poids très légers ou juste le poids du corps.</li>
+                                        <li class="list-item">Dynamique vs statique : Privilégiez les étirements dynamiques (mouvements contrôlés) avant l'effort et les étirements statiques (maintenir une position) après.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="module" id="etirements-post-seance">
+                                <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                                    <span>Étirements Post-Séance</span>
+                                    <span class="arrow">▶</span>
+                                </div>
+                                <div class="subsection-content">
+                                    <ul class="list-disc pl-5">
+                                        <li class="list-item">Favoriser récupération : Les étirements après l'effort aident à détendre les muscles et à favoriser la circulation sanguine, contribuant à une meilleure récupération.</li>
+                                        <li class="list-item">Muscles chauds : Effectuez les étirements lorsque vos muscles sont encore chauds, idéalement 5 à 10 minutes après la fin de votre séance.</li>
+                                        <li class="list-item">Maintenir 15-30 secondes : Tenez chaque étirement pendant 15 à 30 secondes, sans rebondir, jusqu'à ressentir une légère tension.</li>
+                                        <li class="list-item">Groupes musculaires sollicités : Ciblez les principaux groupes musculaires que vous avez travaillés pendant votre séance.</li>
+                                        <li class="list-item">Importance pour prévenir blessures : Des étirements réguliers améliorent la flexibilité et réduisent le risque de blessures.</li>
+                                        <li class="list-item">Environnement calme, respiration profonde : Prenez le temps de vous étirer dans un environnement propice à la détente, en vous concentrant sur votre respiration.</li>
+                                        <li class="list-item">Régularité : Intégrez les étirements dans votre routine post-entraînement pour des bénéfices à long terme.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module" id="marche-rapide">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Marche Rapide</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Préparation (chaussures, vêtements) : Assurez-vous d'avoir des chaussures confortables et des vêtements adaptés pour une marche agréable et sans blessures.</li>
+                                <li class="list-item">Déterminer rythme (parler mais pas pas chanter) : Marchez à un rythme où vous pouvez parler sans être essoufflé, mais pas assez pour chanter.</li>
+                                <li class="list-item">Programme d'entraînement (semaines 1-8) : Commencez par des sessions courtes et augmentez progressivement la durée et l'intensité sur plusieurs semaines.</li>
+                                <li class="list-item">Technique et posture : Gardez le dos droit, les épaules détendues et les bras balancent naturellement.</li>
+                                <li class="list-item">Utilisation des bras et respiration : L'action des bras aide à propulser le corps et une respiration profonde améliore l'oxygénation.</li>
+                                <li class="list-item">Objectifs réalistes : Fixez-vous des objectifs atteignables pour rester motivé.</li>
+                                <li class="list-item">Varier les parcours : Changez de chemins pour éviter la monotonie et découvrir de nouveaux environnements.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="module" id="suivi-des-progres">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>Suivi des Progrès</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <ul class="list-disc pl-5">
+                                <li class="list-item">Motivation et responsabilité : Le suivi des progrès renforce la motivation et vous rend plus responsable de vos objectifs.</li>
+                                <li class="list-item">Objectifs mesurables et ajustements : Utilisez des métriques (distance, durée, poids) pour évaluer vos progrès et ajuster votre programme si nécessaire.</li>
+                                <li class="list-item">Prévenir blessures et surentraînement : Un suivi attentif permet de détecter les signes de fatigue ou de douleur et d'éviter les blessures.</li>
+                                <li class="list-item">Souligner faiblesses et forces : Identifiez les domaines où vous avez besoin d'amélioration et ceux où vous excellez.</li>
+                                <li class="list-item">Construire cohérence et succès long terme : La régularité du suivi contribue à des habitudes saines et à des succès durables.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module" id="motivation-depassement">
+                <div class="section-title" onclick="toggleSection(this)" style="display: flex;">
+                    <span>Motivation et Dépassement</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="section-content">
+                    <div class="module" id="conseils-obstacles">
+                        <div class="subsection-title" onclick="toggleSection(this)" style="display: flex;">
+                            <span>✨ Conseils pour surmonter les obstacles par Gemini ✨</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="subsection-content">
+                            <div class="llm-feature-box">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-3">Décrivez un obstacle et obtenez des conseils personnalisés !</h3>
+                                <div class="mb-4">
+                                    <label for="obstacle-description" class="block text-gray-700 text-sm font-bold mb-2">Décrivez l'obstacle ou le défi que vous rencontrez (ex: manque de motivation, plateau d'entraînement, difficulté à suivre un régime) :</label>
+                                    <textarea id="obstacle-description" class="w-full p-2 border border-gray-300 rounded-md" placeholder="J&#39;ai du mal à me motiver pour aller à la salle après le travail."></textarea>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="generateOvercomeAdvice()">Obtenir des Conseils</button>
+                                    <button onclick="resetOvercomeAdviceForm()" class="bg-gray-500 hover:bg-gray-600">Réinitialiser</button>
+                                    <button onclick="exportOvercomeAdvice()" class="bg-blue-500 hover:bg-blue-600">Exporter</button>
+                                </div>
+                                <div id="overcome-advice-response" class="llm-response rounded-lg"></div>
+                                <div id="overcome-advice-loading" class="loading-indicator">Génération des conseils...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchActive = false; // Indicateur si la recherche est active
+
+        /**
+         * Bascule la visibilité du contenu d'une section.
+         * @param {HTMLElement} element L'élément de titre de section cliqué.
+         */
+        function toggleSection(element) {
+            // Si la recherche est active, désactiver le basculement manuel pour éviter les conflits.
+            if (searchActive) {
+                return;
+            }
+
+            console.log('Clicked element:', element.textContent.trim());
+            const content = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+
+            if (content.classList.contains('active')) {
+                console.log('Section is active, collapsing...');
+                content.classList.remove('active');
+                arrow.classList.remove('rotate');
+            } else {
+                console.log('Section is not active, expanding...');
+                // Fermer les autres sections ouvertes du même niveau
+                const parentContent = element.closest('.section-content, .subsection-content');
+                let siblingsToClose;
+
+                if (parentContent) {
+                    // Si à l'intérieur d'une zone de contenu, fermer les frères et sœurs à l'intérieur de cette zone.
+                    siblingsToClose = parentContent.querySelectorAll(':scope > .module > .section-content.active, :scope > .module > .subsection-content.active');
+                } else {
+                    // Si section de niveau supérieur, fermer les autres contenus de sections de niveau supérieur.
+                    siblingsToClose = document.querySelectorAll('.container > .module > .section-content.active');
+                }
+
+                Array.from(siblingsToClose).forEach(sibling => {
+                    // S'assurer de ne pas fermer la section actuelle ou ses enfants/parents.
+                    if (sibling !== content && !sibling.contains(content) && !content.contains(sibling)) {
+                        console.log('Closing sibling section:', sibling.previousElementSibling.textContent.trim());
+                        sibling.classList.remove('active');
+                        const siblingArrow = sibling.previousElementSibling.querySelector('.arrow');
+                        if (siblingArrow) {
+                            siblingArrow.classList.remove('rotate');
+                        }
+                    }
+                });
+
+                content.classList.add('active');
+                arrow.classList.add('rotate');
+                console.log('Section is now active:', element.textContent.trim());
+            }
+        }
+
+        /**
+         * Réinitialise la visibilité de toutes les sections à leur état par défaut (repliées).
+         */
+        function resetVisibility() {
+            const allContent = document.querySelectorAll('.section-content, .subsection-content');
+            allContent.forEach(content => {
+                content.classList.remove('active');
+                const arrow = content.previousElementSibling.querySelector('.arrow');
+                if (arrow) arrow.classList.remove('rotate');
+            });
+
+            const allTitles = document.querySelectorAll('.section-title, .subsection-title');
+            allTitles.forEach(title => {
+                title.style.display = 'flex'; // S'assurer que tous les titres sont visibles
+            });
+        }
+
+        /**
+         * Filtre les sections en fonction de l'entrée de recherche.
+         */
+        function filterSections() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const allModules = document.querySelectorAll('.module'); // Tous les modules principaux et sous-modules
+
+            if (query === '') {
+                searchActive = false;
+                resetVisibility(); // Réinitialiser tout si la recherche est vide
+                return;
+            }
+
+            searchActive = true;
+
+            // Masquer tout le contenu et les titres initialement
+            allModules.forEach(module => {
+                const title = module.querySelector('.section-title, .subsection-title');
+                const content = module.querySelector('.section-content, .subsection-content');
+                if (title) {
+                    title.style.display = 'none'; // Masquer le titre
+                    // S'assurer que la flèche est réinitialisée si le titre est masqué
+                    const arrow = title.querySelector('.arrow');
+                    if (arrow) arrow.classList.remove('rotate');
+                }
+                if (content) content.classList.remove('active'); // Replier le contenu
+            });
+
+            allModules.forEach(module => {
+                const titleElement = module.querySelector('.section-title, .subsection-title');
+                const contentElement = module.querySelector('.section-content, .subsection-content');
+                let foundMatch = false;
+
+                // Vérifier le titre pour une correspondance
+                if (titleElement && titleElement.textContent.toLowerCase().includes(query)) {
+                    foundMatch = true;
+                }
+
+                // Vérifier le contenu pour une correspondance
+                if (!foundMatch && contentElement) {
+                    const textElements = contentElement.querySelectorAll('p, li');
+                    textElements.forEach(el => {
+                        if (el.textContent.toLowerCase().includes(query)) {
+                            foundMatch = true;
+                        }
+                    });
+                }
+
+                if (foundMatch) {
+                    // Rendre le titre de ce module visible
+                    if (titleElement) titleElement.style.display = 'flex';
+                    // Rendre le contenu de ce module actif (déplié)
+                    if (contentElement) contentElement.classList.add('active');
+
+                    // Rendre récursivement tous les modules parents visibles et actifs
+                    let currentParentContent = module.parentElement.closest('.section-content, .subsection-content');
+                    while (currentParentContent) {
+                        const parentTitle = currentParentContent.previousElementSibling; // Le titre est l'élément précédent
+                        if (parentTitle) parentTitle.style.display = 'flex'; // Rendre le titre parent visible
+                        currentParentContent.classList.add('active'); // Déplier le contenu parent
+
+                        // Passer au parent suivant
+                        currentParentContent = currentParentContent.parentElement.closest('.section-content, .subsection-content');
+                    }
+                }
+            });
+        }
+
+        // Écouteur d'événements pour l'entrée de recherche
+        document.getElementById('search-input').addEventListener('input', filterSections);
+
+        // Au chargement du DOM, réinitialiser la visibilité pour s'assurer que tout est replié par défaut
+        document.addEventListener('DOMContentLoaded', () => {
+            resetVisibility();
+        });
+
+        /**
+         * Calcule les besoins caloriques journaliers (BMR et TDEE) en utilisant l'équation de Mifflin-St Jeor.
+         */
+        function calculateCaloricNeeds() {
+            const age = parseFloat(document.getElementById('profile-age').value);
+            const sex = document.getElementById('profile-sexe').value;
+            const weight = parseFloat(document.getElementById('profile-poids').value);
+            const height = parseFloat(document.getElementById('profile-taille').value);
+            const activityLevel = document.getElementById('activity-level').value;
+            const responseDiv = document.getElementById('caloric-needs-response');
+
+            // Validation des entrées
+            if (isNaN(age) || isNaN(weight) || isNaN(height) || !sex || !activityLevel) {
+                responseDiv.textContent = "Veuillez remplir toutes les informations de profil et sélectionner un niveau d'activité pour le calcul.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            let bmr; // Basal Metabolic Rate (Métabolisme de Base)
+
+            // Mifflin-St Jeor Equation
+            if (sex === 'homme') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            } else if (sex === 'femme') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            } else {
+                responseDiv.textContent = "Sexe non valide pour le calcul du BMR.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            let tdee; // Total Daily Energy Expenditure (Dépenses Énergétiques Quotidiennes Totales)
+            let activityFactor;
+
+            switch (activityLevel) {
+                case 'sedentary':
+                    activityFactor = 1.2;
+                    break;
+                case 'light':
+                    activityFactor = 1.375;
+                    break;
+                case 'moderate':
+                    activityFactor = 1.55;
+                    break;
+                case 'active':
+                    activityFactor = 1.725;
+                    break;
+                case 'extra-active':
+                    activityFactor = 1.9;
+                    break;
+                default:
+                    responseDiv.textContent = "Niveau d'activité non valide.";
+                    responseDiv.classList.add('active');
+                    return;
+            }
+
+            tdee = bmr * activityFactor;
+
+            responseDiv.innerHTML = `
+                <p><strong>Métabolisme de Base (BMR) :</strong> ${bmr.toFixed(0)} calories/jour</p>
+                <p><strong>Dépenses Énergétiques Quotidiennes Totales (TDEE) :</strong> ${tdee.toFixed(0)} calories/jour</p>
+                <p class="text-sm text-gray-600 mt-2">Ces valeurs sont des estimations. Les besoins réels peuvent varier en fonction de nombreux facteurs (génétique, composition corporelle, etc.). Consultez un professionnel de la santé pour des conseils personnalisés.</p>
+            `;
+            responseDiv.classList.add('active');
+        }
+
+        /**
+         * Réinitialise les champs du calculateur de besoins caloriques et les résultats.
+         */
+        function resetCaloricCalculator() {
+            document.getElementById('activity-level').value = '';
+            document.getElementById('caloric-needs-response').textContent = '';
+            document.getElementById('caloric-needs-response').classList.remove('active');
+        }
+
+
+        /**
+         * Calls the Gemini API to generate nutrition information.
+         */
+        async function generateNutritionInfo() {
+            const queryInput = document.getElementById('nutrition-query-input');
+            const responseDiv = document.getElementById('nutrition-response');
+            const loadingIndicator = document.getElementById('nutrition-loading');
+            const userQuery = queryInput.value.trim();
+
+            if (!userQuery) {
+                responseDiv.classList.remove('active');
+                responseDiv.textContent = "Veuillez entrer un nutriment à expliquer.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            loadingIndicator.classList.add('active');
+            responseDiv.classList.remove('active');
+            responseDiv.textContent = '';
+
+            try {
+                const prompt = `En tant qu'expert en nutrition sportive, expliquez en détail le rôle de "${userQuery}" dans le corps humain, en mettant l'accent sur son importance pour les sportifs. Limitez la réponse à environ 150-200 mots.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                // ATTENTION POUR GITHUB PAGES :
+                // La clé API est vide ici pour la sécurité en production sur Canvas.
+                // Pour que les fonctionnalités Gemini fonctionnent sur votre GitHub Pages,
+                // vous devrez insérer votre propre clé API ici :
+                const apiKey = ""; // <--- Insérez votre clé API Gemini ici si vous l'utilisez publiquement !
+                                   //      Soyez conscient des implications de sécurité de l'exposition des clés API.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Erreur API : ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseDiv.textContent = text;
+                    responseDiv.classList.add('active');
+                } else {
+                    responseDiv.textContent = "Désolé, je n'ai pas pu générer d'information pour le moment. Veuillez réessayer.";
+                    responseDiv.classList.add('active');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                responseDiv.textContent = `Une erreur est survenue : ${error.message}. Veuillez vérifier votre connexion ou réessayer.`;
+                responseDiv.classList.add('active');
+            } finally {
+                loadingIndicator.classList.remove('active');
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate meal ideas.
+         */
+        async function generateMealIdeas() {
+            const prefsInput = document.getElementById('meal-prefs');
+            const goalsInput = document.getElementById('meal-goals');
+            const ingredientsInput = document.getElementById('meal-ingredients');
+            const responseDiv = document.getElementById('meal-ideas-response');
+            const loadingIndicator = document.getElementById('meal-ideas-loading');
+
+            const preferences = prefsInput.value.trim();
+            const goals = goalsInput.value.trim();
+            const ingredients = ingredientsInput.value.trim();
+
+            if (!preferences && !goals && !ingredients) {
+                responseDiv.classList.remove('active');
+                responseDiv.textContent = "Veuillez entrer au moins une préférence, un objectif ou des ingrédients pour générer des idées de repas.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            loadingIndicator.classList.add('active');
+            responseDiv.classList.remove('active');
+            responseDiv.textContent = '';
+
+            try {
+                let prompt = `Générez 3 idées de repas pour un sportif.`;
+                if (preferences) prompt += ` Préférences alimentaires : ${preferences}.`;
+                if (goals) prompt += ` Objectifs : ${goals}.`;
+                if (ingredients) prompt += ` Ingrédients disponibles : ${ingredients}.`;
+                prompt += ` Chaque idée de repas doit inclure une brève description des macronutriments principaux et pourquoi elle est adaptée pour un sportif. Présentez la réponse sous forme de liste numérotée.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                // ATTENTION POUR GITHUB PAGES :
+                // La clé API est vide ici pour la sécurité en production sur Canvas.
+                // Pour que les fonctionnalités Gemini fonctionnent sur votre GitHub Pages,
+                // vous devrez insérer votre propre clé API ici :
+                const apiKey = ""; // <--- Insérez votre clé API Gemini ici si vous l'utilisez publiquement !
+                                   //      Soyez conscient des implications de sécurité de l'exposition des clés API.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Erreur API : ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseDiv.textContent = text;
+                    responseDiv.classList.add('active');
+                } else {
+                    responseDiv.textContent = "Désolé, je n'ai pas pu générer d'idées de repas pour le moment. Veuillez réessayer.";
+                    responseDiv.classList.add('active');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                responseDiv.textContent = `Une erreur est survenue : ${error.message}. Veuillez vérifier votre connexion ou réessayer.`;
+                responseDiv.classList.add('active');
+            } finally {
+                loadingIndicator.classList.remove('active');
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate a workout plan.
+         */
+        async function generateWorkoutPlan() {
+            const fitnessLevel = document.getElementById('fitness-level').value;
+            const workoutGoals = document.getElementById('workout-goals').value.trim();
+            const availableEquipment = document.getElementById('available-equipment').value.trim();
+            const workoutFrequency = document.getElementById('workout-frequency-input').value.trim();
+            const workoutDuration = document.getElementById('workout-duration-input').value.trim();
+            const responseDiv = document.getElementById('workout-plan-response');
+            const loadingIndicator = document.getElementById('workout-plan-loading');
+
+            if (!fitnessLevel || !workoutGoals || !workoutFrequency || !workoutDuration) {
+                responseDiv.classList.remove('active');
+                responseDiv.textContent = "Veuillez remplir le niveau de forme physique, les objectifs, la fréquence et la durée souhaitée pour générer un plan d'entraînement.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            loadingIndicator.classList.add('active');
+            responseDiv.classList.remove('active');
+            responseDiv.innerHTML = ''; // Clear previous content
+
+            try {
+                let prompt = `Générez un plan d'entraînement d'une semaine pour un sportif.
+                Niveau de forme physique : ${fitnessLevel}.
+                Objectifs : ${workoutGoals}.`;
+                if (availableEquipment) prompt += ` Équipement disponible : ${availableEquipment}.`;
+                prompt += ` Fréquence souhaitée : ${workoutFrequency}.
+                Durée par séance souhaitée : ${workoutDuration}.
+                Présentez le plan sous forme de tableau Markdown avec les colonnes suivantes : "Jour", "Type d'entraînement", "Exercices (Séries x Répétitions)", "Échauffement", "Retour au calme".
+                Pour chaque jour d'entraînement, listez les exercices avec séries et répétitions. Pour les jours de repos, indiquez "Repos actif" ou "Repos complet".`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Replace with your actual API key if deploying publicly
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Erreur API : ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    
+                    // Parse Markdown table and convert to HTML table
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+                    if (lines.length < 2 || !lines[0].includes('|') || !lines[1].includes('---')) {
+                        // Fallback if not a perfect Markdown table
+                        responseDiv.textContent = text; // Display as plain text if not a table
+                        responseDiv.classList.add('active');
+                        console.warn("AI response was not in expected table format. Displaying as plain text.");
+                    } else {
+                        const headers = lines[0].split('|').map(h => h.trim()).filter(h => h !== '');
+                        const dataRows = lines.slice(2); // Skip header and separator line
+
+                        let tableHtml = '<table class="workout-table">';
+                        tableHtml += '<thead><tr>';
+                        headers.forEach(header => {
+                            tableHtml += `<th>${header}</th>`;
+                        });
+                        tableHtml += '</tr></thead><tbody>';
+
+                        dataRows.forEach(row => {
+                            const cells = row.split('|').map(c => c.trim()).filter(c => c !== '');
+                            if (cells.length === headers.length) { // Ensure cell count matches header count
+                                tableHtml += '<tr>';
+                                cells.forEach((cell, index) => {
+                                    tableHtml += `<td data-label="${headers[index]}">${cell}</td>`;
+                                });
+                                tableHtml += '</tr>';
+                            }
+                        });
+                        tableHtml += '</tbody></table>';
+                        responseDiv.innerHTML = tableHtml;
+                        responseDiv.classList.add('active');
+                    }
+                } else {
+                    responseDiv.textContent = "Désolé, je n'ai pas pu générer de plan d'entraînement pour le moment. Veuillez réessayer.";
+                    responseDiv.classList.add('active');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                responseDiv.textContent = `Une erreur est survenue : ${error.message}. Veuillez vérifier votre connexion ou réessayer.`;
+                responseDiv.classList.add('active');
+            } finally {
+                loadingIndicator.classList.remove('active');
+            }
+        }
+
+        /**
+         * Resets the workout plan form.
+         */
+        function resetWorkoutPlanForm() {
+            document.getElementById('fitness-level').value = '';
+            document.getElementById('workout-goals').value = '';
+            document.getElementById('available-equipment').value = '';
+            document.getElementById('workout-frequency-input').value = '';
+            document.getElementById('workout-duration-input').value = '';
+            document.getElementById('workout-plan-response').innerHTML = ''; // Use innerHTML to clear table
+            document.getElementById('workout-plan-response').classList.remove('active');
+            document.getElementById('workout-plan-loading').classList.remove('active');
+        }
+
+        /**
+         * Exports the generated workout plan to the clipboard.
+         */
+        function exportWorkoutPlan() {
+            const responseText = document.getElementById('workout-plan-response').innerText; // Use innerText to get plain text
+            if (responseText) {
+                const textarea = document.createElement('textarea');
+                textarea.value = responseText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Plan d\'entraînement copié dans le presse-papiers !');
+                } catch (err) {
+                    console.error('Impossible de copier le texte: ', err);
+                    alert('Échec de la copie. Veuillez copier le texte manuellement.');
+                }
+                document.body.removeChild(textarea);
+            } else {
+                alert('Aucun plan d\'entraînement à exporter.');
+            }
+        }
+
+        /**
+         * Resets the meal ideas form.
+         */
+        function resetMealIdeasForm() {
+            document.getElementById('meal-prefs').value = '';
+            document.getElementById('meal-goals').value = '';
+            document.getElementById('meal-ingredients').value = '';
+            document.getElementById('meal-ideas-response').textContent = '';
+            document.getElementById('meal-ideas-response').classList.remove('active');
+            document.getElementById('meal-ideas-loading').classList.remove('active');
+        }
+
+        /**
+         * Exports the generated meal ideas to the clipboard.
+         */
+        function exportMealIdeas() {
+            const responseText = document.getElementById('meal-ideas-response').textContent;
+            if (responseText) {
+                // Use execCommand for clipboard copy due to iframe restrictions
+                const textarea = document.createElement('textarea');
+                textarea.value = responseText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Idées de repas copiées dans le presse-papiers !'); // Using alert for simplicity, could be a custom modal
+                } catch (err) {
+                    console.error('Impossible de copier le texte: ', err);
+                    alert('Échec de la copie. Veuillez copier le texte manuellement.');
+                }
+                document.body.removeChild(textarea);
+            } else {
+                alert('Aucune idée de repas à exporter.');
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate advice for overcoming obstacles.
+         */
+        async function generateOvercomeAdvice() {
+            const obstacleInput = document.getElementById('obstacle-description');
+            const responseDiv = document.getElementById('overcome-advice-response');
+            const loadingIndicator = document.getElementById('overcome-advice-loading');
+            const userObstacle = obstacleInput.value.trim();
+
+            if (!userObstacle) {
+                responseDiv.classList.remove('active');
+                responseDiv.textContent = "Veuillez décrire l'obstacle pour obtenir des conseils.";
+                responseDiv.classList.add('active');
+                return;
+            }
+
+            loadingIndicator.classList.add('active');
+            responseDiv.classList.remove('active');
+            responseDiv.textContent = '';
+
+            try {
+                const prompt = `En tant que coach sportif et nutritionnel, fournissez des conseils pratiques et motivants pour surmonter l'obstacle suivant : "${userObstacle}". Concentrez-vous sur des stratégies concrètes et des changements de mentalité. Limitez la réponse à environ 200-250 mots.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Replace with your actual API key if deploying publicly
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Erreur API : ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseDiv.textContent = text;
+                    responseDiv.classList.add('active');
+                } else {
+                    responseDiv.textContent = "Désolé, je n'ai pas pu générer de conseils pour le moment. Veuillez réessayer.";
+                    responseDiv.classList.add('active');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                responseDiv.textContent = `Une erreur est survenue : ${error.message}. Veuillez vérifier votre connexion ou réessayer.`;
+                responseDiv.classList.add('active');
+            } finally {
+                loadingIndicator.classList.remove('active');
+            }
+        }
+
+        /**
+         * Resets the overcome advice form.
+         */
+        function resetOvercomeAdviceForm() {
+            document.getElementById('obstacle-description').value = '';
+            document.getElementById('overcome-advice-response').textContent = '';
+            document.getElementById('overcome-advice-response').classList.remove('active');
+            document.getElementById('overcome-advice-loading').classList.remove('active');
+        }
+
+        /**
+         * Exports the generated overcome advice to the clipboard.
+         */
+        function exportOvercomeAdvice() {
+            const responseText = document.getElementById('overcome-advice-response').textContent;
+            if (responseText) {
+                const textarea = document.createElement('textarea');
+                textarea.value = responseText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Conseils copiés dans le presse-papiers !');
+                } catch (err) {
+                    console.error('Impossible de copier le texte: ', err);
+                    alert('Échec de la copie. Veuillez copier le texte manuellement.');
+                }
+                document.body.removeChild(textarea);
+            } else {
+                alert('Aucun conseil à exporter.');
+            }
+        }
+
+
+        // Au chargement du DOM, réinitialiser la visibilité pour s'assurer que tout est replié par défaut
+        document.addEventListener('DOMContentLoaded', () => {
+            resetVisibility();
+        });
+    </script>
+
+
+</body></html>
